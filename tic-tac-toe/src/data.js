@@ -1,3 +1,5 @@
+import { act } from "react";
+
 export const GAME_BOARD = [
   ["", "", ""],
   ["", "", ""],
@@ -14,3 +16,8 @@ export const WINNING_COMBINATIONS = [
   [0, 4, 8], // Diagonal \
   [2, 4, 6], // Diagonal /
 ];
+
+export const PLAYERS = {
+  playerOne: { name: "Player 1", symbol: "X", active: true, score: 0},
+  playerTwo: { name: "Player 2", symbol: "O", active: false, score: 0},
+};

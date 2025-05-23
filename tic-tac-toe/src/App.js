@@ -1,8 +1,9 @@
 import './App.css';
-import Header from './components/Header';
+import Players from './components/Players';
 import GameBoard from './components/GameBoard';
+import Score from './components/Score';
 import {useState} from 'react';
-import {GAME_BOARD, WINNING_COMBINATIONS} from './data';
+import {GAME_BOARD, WINNING_COMBINATIONS, PLAYERS} from './data';
 
 const checkWinner = (board) => {
   for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
@@ -17,38 +18,52 @@ const checkWinner = (board) => {
 };
 
 function App() {
+  const [playerOne, setPlayerOne] = useState(PLAYERS.playerOne);
+  const [playerTwo, setPlayerTwo] = useState(PLAYERS.playerTwo);
   const [newGameBoard, setGameBoard] = useState(GAME_BOARD.map(row => [...row].map(cell => cell)));
-  const [activePlayer, setActivePlayer] = useState("X");
   const [turns, setTurns] = useState(0);
-  const [winner, setWinner] = useState(null);
+
+  const setActivePlayer = () => {
+    if (playerTwo.active) {
+      setPlayerOne({ ...playerOne, active: true });
+      setPlayerTwo({ ...playerTwo, active: false });
+    } else {
+      setPlayerOne({ ...playerOne, active: false });
+      setPlayerTwo({ ...playerTwo, active: true });
+    }
+  }
 
   const resetGame = () => {
     setGameBoard(GAME_BOARD.map(row => [...row].map(cell => cell)));
-    setActivePlayer("X");
     setTurns(0);
+  }
+
+  const resetScore = () => {
+    setPlayerOne({ ...playerOne, score: 0 });
+    setPlayerTwo({ ...playerTwo, score: 0 });
   }
 
   const handleCellClick = (rowIndex, cellIndex) => {
     const newBoard = newGameBoard.map(row => [...row]);
     
     if (newBoard[rowIndex][cellIndex] === "") {
-      newBoard[rowIndex][cellIndex] = activePlayer;
+      newBoard[rowIndex][cellIndex] = playerOne.active ? playerOne.symbol : playerTwo.symbol;
       setGameBoard(newBoard);
-      setActivePlayer(activePlayer === "X" ? "O" : "X");
+      setActivePlayer();
       setTurns(turns + 1);
     }
 
     setTimeout(() => {
-      const winner = checkWinner(newBoard);
+      const winner = checkWinner(newBoard) === playerOne.symbol ? playerOne : checkWinner(newBoard) === playerTwo.symbol ? playerTwo : null;
       if (winner) {
-        setWinner(winner);
-        alert(`Player ${winner} wins!`);;
+        alert(`${winner.name} wins!`);
+        setPlayerOne({ ...playerOne, score: playerOne.score + (winner === playerOne ? 1 : 0) });
+        setPlayerTwo({ ...playerTwo, score: playerTwo.score + (winner === playerTwo ? 1 : 0) });
         resetGame();
         return;
       }
 
       else if (turns === 8 && !winner) {
-        alert("It's a draw!");
         resetGame();
         return;
       }
@@ -57,8 +72,9 @@ function App() {
 
   return (
     <div className="App">
-      <Header activePlayer={activePlayer} />
+      <Players playerOne={playerOne} playerTwo={playerTwo} />
       <GameBoard board={newGameBoard} onCellClick={handleCellClick} />
+      <Score playerOne={playerOne} playerTwo={playerTwo} resetScore={resetScore} />
     </div>
   );
 }

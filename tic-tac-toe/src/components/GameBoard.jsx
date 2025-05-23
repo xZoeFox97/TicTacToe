@@ -6,7 +6,8 @@ function GameBoard({ board, onCellClick }) {
       {board.map((row, rowIndex) => (
         <div key={rowIndex} className="row">
           {row.map((cell, cellIndex) => (
-            <div key={cellIndex} className="cell" onClick={() => onCellClick(rowIndex, cellIndex)}>
+            <div key={cellIndex} className={cell === "X" ? "cell-X" : cell ==="O" ? "cell-O": "cell-empty"} 
+                  onClick={() => onCellClick(rowIndex, cellIndex)}>
               {cell}
             </div>
           ))}
