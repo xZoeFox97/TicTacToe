@@ -1,21 +1,12 @@
-import './App.css';
 import Players from './components/Players';
 import GameBoard from './components/GameBoard';
 import Score from './components/Score';
-import {useState} from 'react';
-import {GAME_BOARD, WINNING_COMBINATIONS, PLAYERS} from './data';
 
-const checkWinner = (board) => {
-  for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
-    const [a, b, c] = WINNING_COMBINATIONS[i];
-    if (board[Math.floor(a / 3)][a % 3] && 
-        board[Math.floor(a / 3)][a % 3] === board[Math.floor(b / 3)][b % 3] && 
-        board[Math.floor(a / 3)][a % 3] === board[Math.floor(c / 3)][c % 3]) {
-      return board[Math.floor(a / 3)][a % 3];
-    }
-  }
-  return null;
-};
+import {GAME_BOARD, WINNING_COMBINATIONS, PLAYERS} from './data';
+import checkWinner from './utils/checkWinner';
+
+import {useState} from 'react';
+import './App.css';
 
 function App() {
   const [playerOne, setPlayerOne] = useState(PLAYERS.playerOne);
@@ -54,7 +45,7 @@ function App() {
     }
 
     setTimeout(() => {
-      const winner = checkWinner(newBoard) === playerOne.symbol ? playerOne : checkWinner(newBoard) === playerTwo.symbol ? playerTwo : null;
+      const winner = checkWinner(newBoard, WINNING_COMBINATIONS) === playerOne.symbol ? playerOne : checkWinner(newBoard, WINNING_COMBINATIONS) === playerTwo.symbol ? playerTwo : null;
       if (winner) {
         alert(`${winner.name} wins!`);
         setPlayerOne({ ...playerOne, score: playerOne.score + (winner === playerOne ? 1 : 0) });
